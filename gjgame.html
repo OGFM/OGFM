@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Игра: Динозавр прыгает через кактусы</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        .game-area {
+            position: relative;
+            width: 800px;
+            height: 300px;
+            background-color: #fff;
+            border: 2px solid #000;
+            overflow: hidden;
+        }
+
+        .dino {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            bottom: 0;
+            background-image: url('hes-just-so-pixelated-i-love-him-v0-obzrwinx6wfc1');
+            background-size: cover;
+        }
+
+        .cactus {
+            position: absolute;
+            width: 20px;
+            height: 40px;
+            bottom: 0;
+            background-image: url('raf,360x360,075,t,fafafa-ca443f4786.u4.jpg');
+            background-size: cover;
+            right: 0;
+        }
+
+        .game-over {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 30px;
+            color: red;
+            display: none;
+        }
+
+        .restart-btn {
+            position: absolute;
+            top: 60%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 20px;
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: none;
+        }
+
+        .restart-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="game-area">
+        <div class="dino" id="dino"></div>
+        <div class="cactus" id="cactus"></div>
+        <div class="game-over" id="game-over">Игра окончена</div>
+        <button class="restart-btn" id="restart-btn">Заново</button>
+    </div>
+
+    <script>
+        const dino = document.getElementById('dino');
+        const cactus = document.getElementById('cactus');
+        const gameOver = document.getElementById('game-over');
+        const restartBtn = document.getElementById('restart-btn');
+
+        let isJumping = false;
+        let isGameOver = false;
+
+        function jump() {
+            if (!isJumping && !isGameOver) {
+                isJumping = true;
+                let upInterval = setInterval(() => {
+                    if (parseInt(window.getComputedStyle(dino).bottom) >= 150) {
+                        clearInterval(upInterval);
+                        let downInterval = setInterval(() => {
+                            if (parseInt(window.getComputedStyle(dino).bottom) <= 0) {
+                                clearInterval(downInterval);
+                                isJumping = false;
+                            } else {
+                                dino.style.bottom = parseInt(window.getComputedStyle(dino).bottom) - 10 + 'px';
+                            }
+                        }, 20);
+                    } else {
+                        dino.style.bottom = parseInt(window.getComputedStyle(dino).bottom) + 10 + 'px';
+                    }
+                }, 20);
+            }
+        }
+
+        function moveCactus() {
+            let cactusRight = parseInt(window.getComputedStyle(cactus).right);
+            if (cactusRight >= 800) {
+                cactus.style.right = '0px';
+            } else {
+                cactus.style.right = cactusRight + 5 + 'px';
+            }
+
+            if (detectCollision()) {
+                clearInterval(gameInterval);
+                gameOver.style.display = 'block';
+                restartBtn.style.display = 'block';
+                isGameOver = true;
+            }
+        }
+
+        function detectCollision() {
+            let dinoBottom = parseInt(window.getComputedStyle(dino).bottom);
+            let cactusRight = parseInt(window.getComputedStyle(cactus).right);
+
+            return cactusRight > 750 && cactusRight < 800 && dinoBottom <= 40;
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === ' ' && !isGameOver) {
+                jump();
+            }
+        });
+
+        restartBtn.addEventListener('click', () => {
+            cactus.style.right = '0px';
+            gameOver.style.display = 'none';
+            restartBtn.style.display = 'none';
+            isGameOver = false;
+            gameInterval = setInterval(moveCactus, 20);
+        });
+
+        let gameInterval = setInterval(moveCactus, 20);
+    </script>
+</body>
+</html>
