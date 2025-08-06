@@ -1,4 +1,3 @@
-if
-RTX=Ray Tracing
-then
-GTX=?
+1
+2
+test files i guess
